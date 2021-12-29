@@ -1,0 +1,20 @@
+version: "3.4"
+services:
+    db-service:
+      image: mariadb
+      container_name: db-service
+      restart: unless-stopped
+      tty: true
+      environment:
+          MARIADB_DATABASE: "adb-attractions-service"
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "true"
+    attraction-service:
+        depends_on:
+            - 'db-service'
+        build: '.'
+        environment:
+            spring.profiles.active: 'docker'
+        ports:
+            - '8082:8080'
+        links:
+            - db-service:db
