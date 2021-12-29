@@ -1,0 +1,9 @@
+# Files
+HELP.md
+.gitignore
+
+# Folders
+.vscode
+.vscode/*
+target
+target/*
