@@ -17,9 +17,7 @@ jobs:
           java-version: '16'
       - name: "Create main property file"
         run: |
-          'ls'
-          'cd ./src'
-          'ls'
+          touch ./src/main/resources/application.properties
         # uses: 'finnp/create-file-action@master'
         # env:
         #   FILE_NAME: 'src/main/resources/application.properties'
