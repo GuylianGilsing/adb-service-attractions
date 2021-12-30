@@ -16,7 +16,10 @@ jobs:
           distribution: 'zulu'
           java-version: '16'
       - name: "Create main property file"
-        run: 'ls -a'
+        run: |
+          'ls -a'
+          'cd ./src'
+          'ls -a'
         # uses: 'finnp/create-file-action@master'
         # env:
         #   FILE_NAME: 'src/main/resources/application.properties'
