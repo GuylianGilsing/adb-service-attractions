@@ -17,7 +17,7 @@ jobs:
           java-version: '16'
       - name: "Create main property file"
         run: |
-          mkdir -p 
+          mkdir -p ./src/main/resources
           touch ./src/main/resources/application.properties
         # uses: 'finnp/create-file-action@master'
         # env:
@@ -30,15 +30,6 @@ jobs:
         #     spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver\n
         #     spring.jpa.hibernate.ddl-auto=update\n
         #     spring.jpa.database-platform=org.hibernate.dialect.MySQL5InnoDBDialect\n
-      - name: "Create test property file"
-        uses: 'finnp/create-file-action@master'
-        env:
-          FILE_NAME: 'src/test/resources/application.properties'
-          FILE_DATA:
-            spring.datasource.driver-class-name=org.h2.Driver\n
-            spring.datasource.url=jdbc:h2:mem:db;DB_CLOSE_DELAY=-1\n
-            spring.datasource.username=root\n
-            spring.datasource.password=\n
       - name: "Run maven commands"
         run: |
             'mvnw clean install'
