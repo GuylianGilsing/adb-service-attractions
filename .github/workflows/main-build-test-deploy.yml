@@ -33,10 +33,14 @@ jobs:
           echo "spring.datasource.hikari.initialization-fail-timeout= -1" >> ./src/main/resources/application-docker.properties
           echo "spring.sql.init.continue-on-error= true" >> ./src/main/resources/application-docker.properties
       # Testing
-      - name: "Check if the application builds and run all tests"
-        run: |
-          'mvn clean install'
-          'mvn spring-boot:test'
+      - name: "Check if the application builds"	
+        uses: 'qcastel/github-actions-maven/actions/maven@master'
+        with:
+          maven-args: 'clean install'
+      - name: "Run all tests"	
+        uses: 'qcastel/github-actions-maven/actions/maven@master'
+        with:
+          maven-args: 'spring-boot:test'
       # Build docker image
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
