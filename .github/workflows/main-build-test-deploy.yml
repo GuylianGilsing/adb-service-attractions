@@ -28,6 +28,7 @@ jobs:
             spring.jpa.hibernate.ddl-auto=update\n
             spring.jpa.database-platform=org.hibernate.dialect.MySQL5InnoDBDialect\n
       - name: "Create test property file"
+        run: 'ls -a'
         uses: 'finnp/create-file-action@master'
         env:
           FILE_NAME: 'src/test/resources/application.properties'
