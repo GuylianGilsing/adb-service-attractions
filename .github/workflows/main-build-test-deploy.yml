@@ -9,7 +9,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Go to this branche"
-        uses: 'actions/checkout@v1'
+        uses: 'actions/checkout@v2'
       - name: "Set up JDK 11"
         uses: 'actions/setup-java@v2'
         with:
@@ -17,6 +17,7 @@ jobs:
           java-version: '16'
       - name: "Create main property file"
         run: |
+          mkdir -p 
           touch ./src/main/resources/application.properties
         # uses: 'finnp/create-file-action@master'
         # env:
