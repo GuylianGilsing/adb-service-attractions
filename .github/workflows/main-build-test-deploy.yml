@@ -32,8 +32,8 @@ jobs:
           echo "spring.sql.init.continue-on-error= true" >> ./src/main/resources/application-docker.properties
       - name: "Run maven commands"
         run: |
-          'mvn clean install'
-          'mvn spring-boot:test'
+          'mvnw clean install'
+          'mvnw spring-boot:test'
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to DockerHub

@@ -11,8 +11,6 @@ COPY . ./
 # Create a clean build of the app
 RUN ./mvnw clean install
 
-ENTRYPOINT ["java", "-jar", "target/attractions_database-microservice-attraction_data-0.0.1-SNAPSHOT.jar"]
-
 # ================== #
 # === Production === #
 # ================== #
