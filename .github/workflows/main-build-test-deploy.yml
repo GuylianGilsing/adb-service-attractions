@@ -16,7 +16,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '16'
-      - name: "Permit CI to use mvnw"
+      - name: "Permit CI to view and use mvnw"
         run: chmod +x mvnw
       # Environment setup
       - name: "Create main property file"
@@ -37,10 +37,8 @@ jobs:
       # Testing
       - name: "Build application"
         run: ./mvnw clean install
-      # - name: "Setup docker build"
-      #   run: docker compose up --build -d
-      # - name: "Run tests"
-      #   run: docker compose exec -e SPRING_PROFILES_ACTIVE='docker' adb-service-attractions ./mvnw test
+      - name: "Run tests"
+        run: ./mvnw spring-boot:test
       # Build docker image
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
