@@ -35,10 +35,12 @@ jobs:
           echo "spring.datasource.hikari.initialization-fail-timeout= -1" >> ./src/main/resources/application-docker.properties
           echo "spring.sql.init.continue-on-error= true" >> ./src/main/resources/application-docker.properties
       # Testing
-      - name: "Setup docker build"
-        run: docker compose up --build -d
-      - name: "Run tests"
-        run: docker compose exec -e SPRING_PROFILES_ACTIVE='docker' adb-service-attractions ./mvnw test
+      - name: "Build application"
+        run: ./mvnw clean install
+      # - name: "Setup docker build"
+      #   run: docker compose up --build -d
+      # - name: "Run tests"
+      #   run: docker compose exec -e SPRING_PROFILES_ACTIVE='docker' adb-service-attractions ./mvnw test
       # Build docker image
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
