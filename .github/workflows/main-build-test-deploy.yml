@@ -28,7 +28,7 @@ jobs:
           echo "spring.datasource.password=${{ secrets.DB_PASSWORD }}" >> ./src/main/resources/application-docker.properties
           echo "spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver" >> ./src/main/resources/application-docker.properties
 
-          echo "#Wait 30seconds for database connection" >> ./src/main/resources/application-docker.properties
+          echo "# Wait 30seconds for database connection" >> ./src/main/resources/application-docker.properties
           echo "spring.datasource.hikari.minimum-idle= 0" >> ./src/main/resources/application-docker.properties
           echo "spring.datasource.hikari.initialization-fail-timeout= -1" >> ./src/main/resources/application-docker.properties
           echo "spring.sql.init.continue-on-error= true" >> ./src/main/resources/application-docker.properties
