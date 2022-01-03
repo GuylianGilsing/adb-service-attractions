@@ -58,3 +58,4 @@ jobs:
             docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/adb-service-attractions:latest .
             docker push ${{ secrets.DOCKERHUB_USERNAME }}/adb-service-attractions:latest
       # TODO:: Update server deployment through SSH call
+ 
