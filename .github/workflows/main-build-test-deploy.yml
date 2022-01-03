@@ -23,8 +23,10 @@ jobs:
         run: |
           mkdir -p ./src/main/resources
           touch ./src/main/resources/application-docker.properties
-          
+
+          echo "spring.data.rest.basePath=/api/v1" >> ./src/main/resources/application-docker.properties
           echo "server.error.whitelabel.enabled=false" >> ./src/main/resources/application-docker.properties
+          
           echo "spring.jpa.hibernate.ddl-auto=update" >> ./src/main/resources/application-docker.properties
           echo "spring.datasource.url=jdbc:mysql://db:3306/adb-attractions-service" >> ./src/main/resources/application-docker.properties
           echo "spring.datasource.username=${{ secrets.DB_USERNAME }}" >> ./src/main/resources/application-docker.properties
