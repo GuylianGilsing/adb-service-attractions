@@ -19,8 +19,8 @@ import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.M
 @Service
 public class RollerCoasterService
 {
-    private RollerCoasterRepository rollerCoasterRepository = null;
-    private TechnicalInformationRepository technicalInformationRepository = null;
+    private final RollerCoasterRepository rollerCoasterRepository;
+    private final TechnicalInformationRepository technicalInformationRepository;
 
     @Autowired
     public RollerCoasterService(RollerCoasterRepository rollerCoasterRepository, TechnicalInformationRepository technicalInformationRepository)
@@ -33,6 +33,25 @@ public class RollerCoasterService
     {
         Iterable<RollerCoasterEntity> rollerCoasterEntities = this.rollerCoasterRepository.findAll();
         return RollerCoasterMapper.entityListToSimpleDomainList(rollerCoasterEntities);
+    }
+
+    public List<SimpleRollerCoaster> search(String name, String park)
+    {
+        ArrayList<SimpleRollerCoaster> searchResults = new ArrayList<SimpleRollerCoaster>();        
+
+        if(name.length() > 0)
+        {
+            List<SimpleRollerCoaster> results = this.getRollerCoastersByName(name);
+            this.combineQueryResultsWithSearchResultArray(searchResults, results);
+        }
+
+        if(park.length() > 0)
+        {
+            List<SimpleRollerCoaster> results = this.getRollerCoastersByPark(park);
+            this.combineQueryResultsWithSearchResultArray(searchResults, results);
+        }
+
+        return searchResults;
     }
 
     public RollerCoaster getByID(Long id) throws NotFoundException
@@ -103,7 +122,6 @@ public class RollerCoasterService
         List<TechnicalInformation> domainListTechnicalInformation = domainModel.getTechnicalInformation();
         List<TechnicalInformationEntity> technicalInformationEntities = entity.getTechnicalInformation();
 
-
         ArrayList<TechnicalInformationEntity> updatedTechnicalInformation = new ArrayList<TechnicalInformationEntity>();
 
         for(int i = 0; i < domainListTechnicalInformation.size(); i += 1)
@@ -157,5 +175,60 @@ public class RollerCoasterService
         return this.rollerCoasterRepository.findById(id).orElseThrow(
             () -> new NotFoundException("Rollercoaster with ID: '" + id + "' does not exist.")
         );
+    }
+
+    private List<SimpleRollerCoaster> getRollerCoastersByName(String name)
+    {
+        return this.convertRollerCoasterEntitiesToSimpleDomainModels(this.rollerCoasterRepository.findAllByName(name));
+    }
+
+    private List<SimpleRollerCoaster> getRollerCoastersByPark(String park)
+    {
+        return this.convertRollerCoasterEntitiesToSimpleDomainModels(this.rollerCoasterRepository.findAllByPark(park));
+    }
+
+    private List<SimpleRollerCoaster> convertRollerCoasterEntitiesToSimpleDomainModels(List<RollerCoasterEntity> entities)
+    {
+        if(entities.size() == 0)
+            return List.of();
+
+        ArrayList<SimpleRollerCoaster> domainModels = new ArrayList<SimpleRollerCoaster>();
+
+        for(RollerCoasterEntity entity : entities)
+        {
+            domainModels.add(RollerCoasterMapper.toSimpleDomainModel(entity));
+        }
+
+        return domainModels;
+    }
+
+    private void combineQueryResultsWithSearchResultArray(ArrayList<SimpleRollerCoaster> searchResults, List<SimpleRollerCoaster> queryResults)
+    {
+        ArrayList<Integer> indicesToAddToSearchResults = new ArrayList<Integer>();
+
+        for(Integer queryResultIndex = 0; queryResultIndex < queryResults.size(); queryResultIndex += 1)
+        {
+            boolean canAddQueryResultToSearchResultArray = true;
+            SimpleRollerCoaster queryResult = queryResults.get(queryResultIndex);
+
+            for(SimpleRollerCoaster searchResult : searchResults)
+            {
+                if(searchResult.getId().equals(queryResult.getId()))
+                {
+                    canAddQueryResultToSearchResultArray = false;
+                    break;
+                }
+            }
+
+            if(canAddQueryResultToSearchResultArray)
+            {
+                indicesToAddToSearchResults.add(queryResultIndex);
+            }
+        }
+
+        for(Integer queryResultIndex : indicesToAddToSearchResults)
+        {
+            searchResults.add(queryResults.get(queryResultIndex));
+        }
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javassist.NotFoundException;
@@ -21,7 +22,7 @@ import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.S
 @RequestMapping(path = "/rollercoaster")
 public class RollerCoasterController
 {
-    private RollerCoasterService rollerCoasterService = null;
+    private final RollerCoasterService rollerCoasterService;
 
     @Autowired
     public RollerCoasterController(RollerCoasterService rollerCoasterSerivce)
@@ -35,8 +36,17 @@ public class RollerCoasterController
         return this.rollerCoasterService.getAll();
     }
 
+    @GetMapping(path = "/search")
+    public List<SimpleRollerCoaster> search(
+        @RequestParam(defaultValue = "") String name,
+        @RequestParam(defaultValue = "") String park
+    )
+    {
+        return this.rollerCoasterService.search(name, park);
+    }
+
     @GetMapping(path = "/{rollercoasterId}")
-    public RollerCoaster getAll(@PathVariable Long rollercoasterId) throws NotFoundException
+    public RollerCoaster get(@PathVariable Long rollercoasterId) throws NotFoundException
     {
         return this.rollerCoasterService.getByID(rollercoasterId);
     }
