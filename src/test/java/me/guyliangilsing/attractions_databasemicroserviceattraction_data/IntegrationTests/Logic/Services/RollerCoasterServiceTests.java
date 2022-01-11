@@ -1,6 +1,7 @@
 package me.guyliangilsing.attractions_databasemicroserviceattraction_data.IntegrationTests.Logic.Services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
@@ -10,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javassist.NotFoundException;
-import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Models.AttractionStatus;
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Models.RollerCoaster;
+import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Models.SimpleRollerCoaster;
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Models.TechnicalInformation;
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Services.RollerCoasterService;
 
@@ -31,8 +32,7 @@ public class RollerCoasterServiceTests
     public void testIfCanUpdateTechnicalInformation() throws NotFoundException
     {
         // Arrange
-        RollerCoaster rollerCoaster = this.getPreconfiguredRollerCoasterDomainModel();
-        rollerCoaster = this.rollerCoasterService.create(rollerCoaster);
+        RollerCoaster rollerCoaster = this.rollerCoasterService.getByID(1l);
 
         // Act
         String newManufacturerName = "Intamin";
@@ -68,8 +68,7 @@ public class RollerCoasterServiceTests
     public void testIfCanRemoveOneTechnicalInformationField() throws NotFoundException
     {
         // Arrange
-        RollerCoaster rollerCoaster = this.getPreconfiguredRollerCoasterDomainModel();
-        rollerCoaster = this.rollerCoasterService.create(rollerCoaster);
+        RollerCoaster rollerCoaster = this.rollerCoasterService.getByID(1l);
 
         // Act
         rollerCoaster.removeTechnicalInformation(2l);
@@ -96,8 +95,7 @@ public class RollerCoasterServiceTests
     public void testIfCanAddOneTechnicalInformationField() throws NotFoundException
     {
         // Arrange
-        RollerCoaster rollerCoaster = this.getPreconfiguredRollerCoasterDomainModel();
-        rollerCoaster = this.rollerCoasterService.create(rollerCoaster);
+        RollerCoaster rollerCoaster = this.rollerCoasterService.getByID(1l);
 
         TechnicalInformation techInfoToAdd = new TechnicalInformation("Capacity", "1246");
 
@@ -121,29 +119,62 @@ public class RollerCoasterServiceTests
         }
     }
 
-    private RollerCoaster getPreconfiguredRollerCoasterDomainModel()
+    @Test
+    public void testIfCanSearchRollerCoasterByExactName()
     {
-        RollerCoaster rollerCoaster = new RollerCoaster();
+        // Act
+        List<SimpleRollerCoaster> searchResults = this.rollerCoasterService.search("Taron", "");
 
-        List<TechnicalInformation> technicalInformation = List.of(
-            new TechnicalInformation(1l, "Manufacturer", "Test manufacturer"),
-            new TechnicalInformation(2l, "Coaster type", "Test")
-        );
+        // Assert
+        assertEquals(1, searchResults.size());
+        assertEquals("Taron", searchResults.get(0).getName());
+    }
 
-        rollerCoaster.setId(1l);
-        rollerCoaster.setName("Test rollercoaster");
-        rollerCoaster.setDescription("Test description");
-        rollerCoaster.setAuthorId(1l);
-        rollerCoaster.setOpeningDate("2000-11-21");
-        rollerCoaster.setStatus(AttractionStatus.OPERATIONAL);
-        rollerCoaster.setPark("Test park");
-        rollerCoaster.setCountry("Test country");
-        rollerCoaster.setHeight(100.00);
-        rollerCoaster.setSpeed(120.00);
-        rollerCoaster.setElements("Overbanked turn, Airtime hill");
-        rollerCoaster.setInversions("Zero-G-Roll, Immelman");
-        rollerCoaster.setTechnicalInformation(technicalInformation);
+    @Test
+    public void testIfCanSearchRollerCoasterByLooseName()
+    {
+        // Act
+        List<SimpleRollerCoaster> searchResults = this.rollerCoasterService.search("tArON", "");
 
-        return rollerCoaster;
+        // Assert
+        assertEquals(1, searchResults.size());
+        assertEquals("Taron", searchResults.get(0).getName());
+    }
+
+    @Test
+    public void testIfCanSearchRollerCoasterByExactPark()
+    {
+        // Act
+        List<SimpleRollerCoaster> searchResults = this.rollerCoasterService.search("", "Phantasialand");
+
+        // Assert
+        assertEquals(2, searchResults.size());
+        assertEquals("Phantasialand", searchResults.get(0).getPark());
+        assertEquals("Phantasialand", searchResults.get(1).getPark());
+    }
+
+    @Test
+    public void testIfCanSearchRollerCoasterByLoosePark()
+    {
+        // Act
+        List<SimpleRollerCoaster> searchResults = this.rollerCoasterService.search("", "PhANtaSiAlaND");
+
+        // Assert
+        assertEquals(2, searchResults.size());
+        assertEquals("Phantasialand", searchResults.get(0).getPark());
+        assertEquals("Phantasialand", searchResults.get(1).getPark());
+    }
+
+    @Test
+    public void testThatNoDuplicateAttractionsAreBeingReturned()
+    {
+        // Act
+        List<SimpleRollerCoaster> searchResults = this.rollerCoasterService.search("Taron", "Phantasialand");
+
+        // Assert
+        assertEquals(2, searchResults.size());
+        assertEquals("Phantasialand", searchResults.get(0).getPark());
+        assertEquals("Phantasialand", searchResults.get(1).getPark());
+        assertNotEquals(searchResults.get(0).getId(), searchResults.get(1).getId());
     }
 }
