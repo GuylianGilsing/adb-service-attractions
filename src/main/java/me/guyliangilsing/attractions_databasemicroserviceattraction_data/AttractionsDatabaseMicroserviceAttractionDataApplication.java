@@ -9,11 +9,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 public class AttractionsDatabaseMicroserviceAttractionDataApplication
 {
-	public static void main(String[] args)
-    {
-		SpringApplication.run(AttractionsDatabaseMicroserviceAttractionDataApplication.class, args);
-	}
-
     @Bean
     public WebMvcConfigurer configureGlobalCORS()
     {
@@ -28,4 +23,9 @@ public class AttractionsDatabaseMicroserviceAttractionDataApplication
             }
         };
     }
+
+	public static void main(String[] args)
+    {
+		SpringApplication.run(AttractionsDatabaseMicroserviceAttractionDataApplication.class, args);
+	}
 }

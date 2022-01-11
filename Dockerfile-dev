@@ -1,0 +1,17 @@
+# ============= #
+# === Build === #
+# ============= #
+FROM openjdk:16 AS build
+
+WORKDIR /service-attractions
+
+# Copy all of the source files into our image
+COPY . ./
+
+# Create a clean build of the app
+RUN ./mvnw clean install
+
+EXPOSE 8082
+
+# Run the app
+CMD ["java", "-jar", "/service-attractions/target/attractions_database-microservice-attraction_data-0.0.1-SNAPSHOT.jar"]

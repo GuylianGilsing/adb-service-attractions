@@ -19,6 +19,7 @@ public class AttractionEntity {
     private String name;
 
     @Nullable
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "author_id")
