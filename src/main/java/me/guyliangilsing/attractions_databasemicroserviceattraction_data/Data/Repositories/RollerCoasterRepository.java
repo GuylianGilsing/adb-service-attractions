@@ -10,9 +10,9 @@ import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Data.En
 
 @Repository
 public interface RollerCoasterRepository extends CrudRepository<RollerCoasterEntity, Long>{
-    @Query(value = "SELECT * FROM `rollercoasters` WHERE name LIKE ?1", nativeQuery = true)
+    @Query(value = "SELECT * FROM `rollercoasters` WHERE LOWER(name) LIKE ?1", nativeQuery = true)
     public List<RollerCoasterEntity> findAllByName(String name);
 
-    @Query(value = "SELECT * FROM `rollercoasters` WHERE park LIKE ?1", nativeQuery = true)
+    @Query(value = "SELECT * FROM `rollercoasters` WHERE LOWER(park) LIKE ?1", nativeQuery = true)
     public List<RollerCoasterEntity> findAllByPark(String park);
 }

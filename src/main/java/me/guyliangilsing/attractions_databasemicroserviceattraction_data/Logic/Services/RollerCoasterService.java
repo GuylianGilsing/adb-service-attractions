@@ -41,13 +41,13 @@ public class RollerCoasterService
 
         if(name.length() > 0)
         {
-            List<SimpleRollerCoaster> results = this.getRollerCoastersByName(name);
+            List<SimpleRollerCoaster> results = this.getRollerCoastersByName(name.toLowerCase());
             this.combineQueryResultsWithSearchResultArray(searchResults, results);
         }
 
         if(park.length() > 0)
         {
-            List<SimpleRollerCoaster> results = this.getRollerCoastersByPark(park);
+            List<SimpleRollerCoaster> results = this.getRollerCoastersByPark(park.toLowerCase());
             this.combineQueryResultsWithSearchResultArray(searchResults, results);
         }
 
