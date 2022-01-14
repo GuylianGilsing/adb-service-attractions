@@ -142,6 +142,28 @@ public class RollerCoasterServiceTests
     }
 
     @Test
+    public void testIfCanSearchRollerCoasterByPartialName()
+    {
+        // Act
+        List<SimpleRollerCoaster> searchResults = this.rollerCoasterService.search("aro", "");
+
+        // Assert
+        assertEquals(1, searchResults.size());
+        assertEquals("Taron", searchResults.get(0).getName());
+    }
+
+    @Test
+    public void testIfCanSearchRollerCoasterByPartialLooseName()
+    {
+        // Act
+        List<SimpleRollerCoaster> searchResults = this.rollerCoasterService.search("ARo", "");
+
+        // Assert
+        assertEquals(1, searchResults.size());
+        assertEquals("Taron", searchResults.get(0).getName());
+    }
+
+    @Test
     public void testIfCanSearchRollerCoasterByExactPark()
     {
         // Act
@@ -158,6 +180,30 @@ public class RollerCoasterServiceTests
     {
         // Act
         List<SimpleRollerCoaster> searchResults = this.rollerCoasterService.search("", "PhANtaSiAlaND");
+
+        // Assert
+        assertEquals(2, searchResults.size());
+        assertEquals("Phantasialand", searchResults.get(0).getPark());
+        assertEquals("Phantasialand", searchResults.get(1).getPark());
+    }
+
+    @Test
+    public void testIfCanSearchRollerCoasterByPartialPark()
+    {
+        // Act
+        List<SimpleRollerCoaster> searchResults = this.rollerCoasterService.search("", "antasia");
+
+        // Assert
+        assertEquals(2, searchResults.size());
+        assertEquals("Phantasialand", searchResults.get(0).getPark());
+        assertEquals("Phantasialand", searchResults.get(1).getPark());
+    }
+
+    @Test
+    public void testIfCanSearchRollerCoasterByPartialLoosePark()
+    {
+        // Act
+        List<SimpleRollerCoaster> searchResults = this.rollerCoasterService.search("", "aNTasIa");
 
         // Assert
         assertEquals(2, searchResults.size());

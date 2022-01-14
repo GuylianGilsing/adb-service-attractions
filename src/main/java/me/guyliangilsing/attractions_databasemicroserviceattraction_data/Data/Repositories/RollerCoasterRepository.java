@@ -1,18 +1,10 @@
 package me.guyliangilsing.attractions_databasemicroserviceattraction_data.Data.Repositories;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Data.Entities.RollerCoasterEntity;
 
 @Repository
-public interface RollerCoasterRepository extends CrudRepository<RollerCoasterEntity, Long>{
-    @Query(value = "SELECT * FROM `rollercoasters` WHERE LOWER(name) LIKE ?1", nativeQuery = true)
-    public List<RollerCoasterEntity> findAllByName(String name);
-
-    @Query(value = "SELECT * FROM `rollercoasters` WHERE LOWER(park) LIKE ?1", nativeQuery = true)
-    public List<RollerCoasterEntity> findAllByPark(String park);
+public interface RollerCoasterRepository extends JpaRepository<RollerCoasterEntity, Long>, CustomRollerCoasterRepository{
 }
