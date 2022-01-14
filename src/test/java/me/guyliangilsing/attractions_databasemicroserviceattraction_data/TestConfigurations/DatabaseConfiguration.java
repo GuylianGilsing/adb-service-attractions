@@ -44,7 +44,7 @@ public class DatabaseConfiguration {
         );
 
         entity.setId(1l);
-        entity.setName("Black Mamaba");
+        entity.setName("Black Mamba");
         entity.setDescription("Test description");
         entity.setAuthorId(1l);
         entity.setOpeningDate("2006-05-24");
