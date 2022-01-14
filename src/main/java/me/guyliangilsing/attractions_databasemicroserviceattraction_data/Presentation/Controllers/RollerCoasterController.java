@@ -17,6 +17,8 @@ import javassist.NotFoundException;
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Models.RollerCoaster;
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Models.SimpleRollerCoaster;
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Services.RollerCoasterService;
+import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Presentation.Errors.NameAndParkCombinationNotUniqueException;
+import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Presentation.Errors.ValidationErrorException;
 
 @RestController
 @RequestMapping(path = "/rollercoaster")
@@ -52,7 +54,7 @@ public class RollerCoasterController
     }
 
     @PostMapping
-    public RollerCoaster create(@RequestBody RollerCoaster rollerCoaster)
+    public RollerCoaster create(@RequestBody RollerCoaster rollerCoaster) throws NameAndParkCombinationNotUniqueException,  ValidationErrorException
     {
         rollerCoaster.setId(null);
         
@@ -60,7 +62,7 @@ public class RollerCoasterController
     }
 
     @PutMapping(path = "/{rollercoasterId}")
-    public RollerCoaster update(@PathVariable Long rollercoasterId, @RequestBody RollerCoaster rollerCoaster) throws NotFoundException
+    public RollerCoaster update(@PathVariable Long rollercoasterId, @RequestBody RollerCoaster rollerCoaster) throws NotFoundException, NameAndParkCombinationNotUniqueException, ValidationErrorException
     {
         rollerCoaster.setId(rollercoasterId);
         

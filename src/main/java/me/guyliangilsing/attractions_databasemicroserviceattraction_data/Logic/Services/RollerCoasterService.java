@@ -15,12 +15,16 @@ import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.M
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Models.RollerCoaster;
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Models.SimpleRollerCoaster;
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Models.TechnicalInformation;
+import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Validators.RollerCoasterValidator;
+import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Presentation.Errors.NameAndParkCombinationNotUniqueException;
+import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Presentation.Errors.ValidationErrorException;
 
 @Service
 public class RollerCoasterService
 {
     private final RollerCoasterRepository rollerCoasterRepository;
     private final TechnicalInformationRepository technicalInformationRepository;
+    private final RollerCoasterValidator rollerCoasterValidator = new RollerCoasterValidator();
 
     @Autowired
     public RollerCoasterService(RollerCoasterRepository rollerCoasterRepository, TechnicalInformationRepository technicalInformationRepository)
@@ -61,8 +65,14 @@ public class RollerCoasterService
         return RollerCoasterMapper.toDomainModel(entity);
     }
 
-    public RollerCoaster create(RollerCoaster rollerCoaster)
+    public RollerCoaster create(RollerCoaster rollerCoaster) throws NameAndParkCombinationNotUniqueException, ValidationErrorException
     {
+        if(!this.rollerCoasterValidator.isValid(rollerCoaster))
+            throw new ValidationErrorException("Given rollercoaster is not valid", this.rollerCoasterValidator.getErrors());
+
+        if(!this.nameAndParkCombinationAreUnique(rollerCoaster.getName(), rollerCoaster.getPark()))
+            throw new NameAndParkCombinationNotUniqueException("Combination of name and park are not unique.");
+
         RollerCoasterEntity entity = RollerCoasterMapper.toEntity(rollerCoaster);
 
         this.addNewTechnicalInformationEntitiesToRollercoasterEntity(entity);
@@ -71,8 +81,14 @@ public class RollerCoasterService
         return RollerCoasterMapper.toDomainModel(entity);
     }
 
-    public RollerCoaster update(RollerCoaster rollerCoaster) throws NotFoundException
+    public RollerCoaster update(RollerCoaster rollerCoaster) throws NotFoundException, NameAndParkCombinationNotUniqueException, ValidationErrorException
     {
+        if(!this.rollerCoasterValidator.isValid(rollerCoaster))
+            throw new ValidationErrorException("Given rollercoaster is not valid", this.rollerCoasterValidator.getErrors());
+
+        if(!this.nameAndParkCombinationDoNotExistOnOtherCoasters(rollerCoaster.getId(), rollerCoaster.getName(), rollerCoaster.getPark()))
+            throw new NameAndParkCombinationNotUniqueException("Combination of name and park are not unique.");
+
         RollerCoasterEntity entity = this.getRollerCoasterByID(rollerCoaster.getId());
         
         entity.setName(rollerCoaster.getName());
@@ -104,6 +120,29 @@ public class RollerCoasterService
         }
 
         this.rollerCoasterRepository.deleteById(entity.getId());
+    }
+
+    private boolean nameAndParkCombinationAreUnique(String name, String park)
+    {
+        System.out.println(this.rollerCoasterRepository.findRollerCoasterEntityByNameAndPark(name, park));
+
+        if(this.rollerCoasterRepository.findRollerCoasterEntityByNameAndPark(name, park) != null)
+            return false;
+
+        return true;
+    }
+
+    private boolean nameAndParkCombinationDoNotExistOnOtherCoasters(Long currentId, String name, String park)
+    {
+        RollerCoasterEntity entity = this.rollerCoasterRepository.findRollerCoasterEntityByNameAndPark(name, park);
+
+        if(entity == null)
+            return true;
+
+        if(entity.getId() == currentId)
+            return true;
+
+        return false;
     }
 
     private void addNewTechnicalInformationEntitiesToRollercoasterEntity(RollerCoasterEntity entity)
@@ -179,12 +218,12 @@ public class RollerCoasterService
 
     private List<SimpleRollerCoaster> getRollerCoastersByName(String name)
     {
-        return this.convertRollerCoasterEntitiesToSimpleDomainModels(this.rollerCoasterRepository.findAllByName(name));
+        return this.convertRollerCoasterEntitiesToSimpleDomainModels(this.rollerCoasterRepository.findRollerCoasterEntityByLooseName(name));
     }
 
     private List<SimpleRollerCoaster> getRollerCoastersByPark(String park)
     {
-        return this.convertRollerCoasterEntitiesToSimpleDomainModels(this.rollerCoasterRepository.findAllByPark(park));
+        return this.convertRollerCoasterEntitiesToSimpleDomainModels(this.rollerCoasterRepository.findRollerCoasterEntityByLoosePark(park));
     }
 
     private List<SimpleRollerCoaster> convertRollerCoasterEntitiesToSimpleDomainModels(List<RollerCoasterEntity> entities)
