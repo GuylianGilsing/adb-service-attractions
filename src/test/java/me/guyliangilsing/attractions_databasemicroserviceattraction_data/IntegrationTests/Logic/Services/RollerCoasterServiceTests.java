@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import javassist.NotFoundException;
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Models.AttractionStatus;
@@ -20,6 +19,7 @@ import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.M
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Models.TechnicalInformation;
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Logic.Services.RollerCoasterService;
 import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Presentation.Errors.NameAndParkCombinationNotUniqueException;
+import me.guyliangilsing.attractions_databasemicroserviceattraction_data.Presentation.Errors.ValidationErrorException;
 
 @SpringBootTest
 public class RollerCoasterServiceTests
@@ -35,7 +35,7 @@ public class RollerCoasterServiceTests
 
     @Test
     @DirtiesContext // Refresh the contenxt, and thus the database, after running this test
-    public void testIfCanCreateRollerCoasterWithUniqueNameAndParkCombination() throws NameAndParkCombinationNotUniqueException
+    public void testIfCanCreateRollerCoasterWithUniqueNameAndParkCombination() throws NameAndParkCombinationNotUniqueException, ValidationErrorException
     {
         // Arrange
         RollerCoaster rollerCoaster = new RollerCoaster();
@@ -84,7 +84,49 @@ public class RollerCoasterServiceTests
 
     @Test
     @DirtiesContext // Refresh the contenxt, and thus the database, after running this test
-    public void testIfCanUpdateTechnicalInformation() throws NotFoundException
+    public void testIfCanUpdateRollerCoasterWithUniqueNameAndParkCombination() throws NotFoundException, NameAndParkCombinationNotUniqueException, ValidationErrorException
+    {
+        // Arrange
+        RollerCoaster rollerCoaster = this.rollerCoasterService.getByID(1l);
+
+        rollerCoaster.setHeight(25.00);
+        rollerCoaster.setSpeed(62.00);
+
+        // Act
+        RollerCoaster updatedRollerCoaster = this.rollerCoasterService.update(rollerCoaster);
+
+        // Assert
+        assertEquals(rollerCoaster.getName(), updatedRollerCoaster.getName());
+        assertEquals(rollerCoaster.getDescription(), updatedRollerCoaster.getDescription());
+        assertEquals(rollerCoaster.getAuthorId(), updatedRollerCoaster.getAuthorId());
+        assertEquals(rollerCoaster.getOpeningDate(), updatedRollerCoaster.getOpeningDate());
+        assertEquals(rollerCoaster.getStatus(), updatedRollerCoaster.getStatus());
+        assertEquals(rollerCoaster.getPark(), updatedRollerCoaster.getPark());
+        assertEquals(rollerCoaster.getCountry(), updatedRollerCoaster.getCountry());
+        assertEquals(rollerCoaster.getHeight(), updatedRollerCoaster.getHeight());
+        assertEquals(rollerCoaster.getSpeed(), updatedRollerCoaster.getSpeed());
+    }
+
+    @Test
+    public void testIfCantUpdateRollerCoasterWithSameNameAndParkCombinationAsAnotherRollerCoaster() throws NotFoundException, NameAndParkCombinationNotUniqueException, ValidationErrorException
+    {
+        // Arrange
+        RollerCoaster rollerCoaster = this.rollerCoasterService.getByID(1l);
+
+        rollerCoaster.setName("Taron");
+        rollerCoaster.setPark("Phantasialand");
+
+        // Act + assert
+        Exception exception = assertThrows(NameAndParkCombinationNotUniqueException.class, () -> {
+            this.rollerCoasterService.update(rollerCoaster);
+        });
+
+        assertNotNull(exception);
+    }
+
+    @Test
+    @DirtiesContext // Refresh the contenxt, and thus the database, after running this test
+    public void testIfCanUpdateTechnicalInformation() throws NotFoundException, NameAndParkCombinationNotUniqueException, ValidationErrorException
     {
         // Arrange
         RollerCoaster rollerCoaster = this.rollerCoasterService.getByID(1l);
@@ -121,7 +163,7 @@ public class RollerCoasterServiceTests
 
     @Test
     @DirtiesContext // Refresh the contenxt, and thus the database, after running this test
-    public void testIfCanRemoveOneTechnicalInformationField() throws NotFoundException
+    public void testIfCanRemoveOneTechnicalInformationField() throws NotFoundException, NameAndParkCombinationNotUniqueException, ValidationErrorException
     {
         // Arrange
         RollerCoaster rollerCoaster = this.rollerCoasterService.getByID(1l);
@@ -149,7 +191,7 @@ public class RollerCoasterServiceTests
 
     @Test
     @DirtiesContext // Refresh the contenxt, and thus the database, after running this test
-    public void testIfCanAddOneTechnicalInformationField() throws NotFoundException
+    public void testIfCanAddOneTechnicalInformationField() throws NotFoundException, NameAndParkCombinationNotUniqueException, ValidationErrorException
     {
         // Arrange
         RollerCoaster rollerCoaster = this.rollerCoasterService.getByID(1l);
